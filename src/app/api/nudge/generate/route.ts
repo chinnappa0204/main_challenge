@@ -28,8 +28,8 @@ Do NOT write generic motivational quotes like "Believe in yourself!".
 Instead, write a nudge that connects a known trigger to a specific off-screen action, mentioning previous success or preferences if applicable.
 
 Habit: ${profile.specificHabit}
-Triggers: ${profile.triggers.join(', ')}
-Interests: ${profile.personalInterests.join(', ')}
+Triggers: ${(profile.triggers ?? []).join(', ')}
+Interests: ${(profile.personalInterests ?? []).join(', ')}
 Preferred tone: ${profile.preferredCoachingTone}
 Recent active triggers: ${recentTriggers.join(', ') || 'None yet'}
 Effective past activities: ${successfulActivities.join(', ') || 'None yet'}
@@ -45,15 +45,17 @@ Keep it short, helpful, and focused on stepping away from the device.`;
 
     const fallbackGenerator = (): NudgeResponse => {
       // Local nudge generator fallback
-      const activeTrigger = recentTriggers[0] || profile.triggers[0] || 'feeling tired or stressed';
+      const safeTriggers = profile.triggers ?? [];
+      const safeInterests = profile.personalInterests ?? [];
+      const activeTrigger = recentTriggers[0] || safeTriggers[0] || 'feeling tired or stressed';
       const habitWord = profile.habitType === 'phone-social' ? 'scrolling' : 'using screens';
-      const interest = profile.personalInterests[0] || 'taking a walk';
+      const interest = safeInterests[0] || 'taking a walk';
 
       let content = `It's common to turn to ${habitWord} when you experience ${activeTrigger}. Before you unlock your device, try taking a 5-minute pause to do some light stretching. It helps break the automatic loop.`;
 
       if (successfulActivities.length > 0) {
         content = `You usually start ${habitWord} when triggered by ${activeTrigger}. Previously, "${successfulActivities[0]}" helped reduce your urge. Try doing that for 5 minutes right now before opening any apps!`;
-      } else if (profile.personalInterests.length > 0) {
+      } else if (safeInterests.length > 0) {
         content = `Feeling the urge to open ${profile.specificHabit.toLowerCase()}? Since you enjoy ${interest}, close the app right now and dedicate 10 minutes to it. Your mind will thank you.`;
       }
 

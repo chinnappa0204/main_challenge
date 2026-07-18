@@ -25,11 +25,14 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'User profile is required' }, { status: 400 });
     }
 
+    const triggers = (profile.triggers ?? []).join(', ');
+    const interests = (profile.personalInterests ?? []).join(', ');
+
     const systemInstruction = `You are a clinical behavior change planner.
 Based on the user's profile and habit triggers, generate a daily plan.
 Habit: ${profile.specificHabit} (Type: ${profile.habitType})
-Triggers: ${profile.triggers.join(', ')}
-Interests: ${profile.personalInterests.join(', ')}
+Triggers: ${triggers}
+Interests: ${interests}
 Coaching tone: ${profile.preferredCoachingTone}
 
 Use recent outcomes to adapt:
@@ -51,8 +54,8 @@ Make the activities highly realistic, off-screen, and matching their preferred t
     const fallbackGenerator = (): PlanResponse => {
       // Heuristic fallback daily plans
       const habit = profile.habitType;
-      const interests = profile.personalInterests.length > 0 ? profile.personalInterests : ['walking', 'reading', 'nature'];
-      const interest = interests[0];
+      const safeInterests = (profile.personalInterests ?? []).length > 0 ? profile.personalInterests : ['walking', 'reading', 'nature'];
+      const interest = safeInterests[0];
 
       let focus = 'Reduce screen time by 20 minutes before sleeping.';
       let predictedRisk = 'Feeling restless or bored between 8:00 PM and 10:00 PM.';
