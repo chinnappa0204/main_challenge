@@ -66,7 +66,7 @@ export default function Insights() {
     }
     return [];
   });
-  const [useDemoMode, setUseDemoMode] = useState(false);
+  const [useDemoMode, setUseDemoMode] = useState(true);
 
   useEffect(() => {
     if (!profile) {
