@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   ArrowRight, RefreshCw, CheckCircle, AlertTriangle,
-  Compass, Coffee,
+  Compass, Shield, Users, Coffee, Star,
 } from 'lucide-react';
 import { storageRepository } from '@/lib/storage';
 import { UserProfile, DailyPlan, InterventionLog, UrgeIntensity } from '@/lib/types';
@@ -97,9 +97,31 @@ function TodayDashboard({ profile }: { profile: UserProfile }) {
   const [availableTime, setAvailableTime]       = useState(10);
   const [currentEmotion, setCurrentEmotion]     = useState('stressed');
   const [redirectContext, setRedirectContext]   = useState('');
+  const [hasHistory, setHasHistory]             = useState(false);
+
   // Check for commitment letter unlock
   const [letterUnlockReady, setLetterUnlockReady] = useState(false);
   const [letterContent, setLetterContent]          = useState('');
+
+  useEffect(() => {
+    const todayStr = new Date().toISOString().split('T')[0];
+    const plan = storageRepository.getDailyPlan(todayStr);
+    const interventions = storageRepository.getInterventions();
+    const reflections   = storageRepository.getEveningReflections();
+    setHasHistory(interventions.length > 0 || reflections.length > 0);
+
+    if (plan) setDailyPlan(plan);
+    else generateTodayPlan(profile);
+
+    // Check commitment letter
+    const letter = storageRepository.getCommitmentLetter();
+    if (letter && !letter.unlocked && new Date() >= new Date(letter.unlockAt)) {
+      setLetterUnlockReady(true);
+      setLetterContent(letter.aiEnhanced || letter.content);
+      storageRepository.markLetterUnlocked();
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const generateTodayPlan = async (p: UserProfile, easier = false) => {
     setIsGeneratingPlan(true);
@@ -133,25 +155,6 @@ function TodayDashboard({ profile }: { profile: UserProfile }) {
     } catch (e) { console.error(e); }
     finally { setIsGeneratingPlan(false); }
   };
-
-  useEffect(() => {
-    const todayStr = new Date().toISOString().split('T')[0];
-    const plan = storageRepository.getDailyPlan(todayStr);
-
-    setTimeout(() => {
-      if (plan) setDailyPlan(plan);
-      else generateTodayPlan(profile);
-
-      // Check commitment letter
-      const letter = storageRepository.getCommitmentLetter();
-      if (letter && !letter.unlocked && new Date() >= new Date(letter.unlockAt)) {
-        setLetterUnlockReady(true);
-        setLetterContent(letter.aiEnhanced || letter.content);
-        storageRepository.markLetterUnlocked();
-      }
-    }, 0);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
 
   const toggleAction = (cat: 'purpose' | 'connection' | 'protection') => {
     if (!dailyPlan) return;
@@ -409,12 +412,11 @@ function TodayDashboard({ profile }: { profile: UserProfile }) {
 
 /* ── Root page: smart router ────────────────────────────── */
 export default function Home() {
+  const router = useRouter();
   const [profile, setProfile] = useState<UserProfile | null | undefined>(undefined);
 
   useEffect(() => {
-    setTimeout(() => {
-      setProfile(storageRepository.getUserProfile());
-    }, 0);
+    setProfile(storageRepository.getUserProfile());
   }, []);
 
   if (profile === undefined) return null; // prevent flash

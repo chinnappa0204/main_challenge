@@ -77,7 +77,7 @@ export default function OnboardingPage() {
       const data = await res.json();
       setExtractedProfile(data as UserProfile);
       setStep('review');
-    } catch {
+    } catch (e: unknown) {
       setError('Something went wrong. Please review and try again.');
       setStep('tone');
     }
@@ -106,7 +106,7 @@ export default function OnboardingPage() {
           habitType: habitType as HabitType,
         };
         storageRepository.saveCommitmentLetter(letter);
-      } catch {
+      } catch (e) {
         // Silently save raw letter if enhance fails
         const unlockDate = new Date();
         unlockDate.setDate(unlockDate.getDate() + 30);

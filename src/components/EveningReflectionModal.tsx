@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useRef } from 'react';
-import { X, Award, Sparkles, Smile, Mic, MicOff } from 'lucide-react';
+import { X, Award, Sparkles, Smile, Mic, MicOff, CheckCircle } from 'lucide-react';
 import { storageRepository } from '@/lib/storage';
 import { EveningReflectionLog, UserProfile } from '@/lib/types';
 
@@ -12,32 +12,10 @@ interface Props {
 }
 
 // Web Speech API typings
-interface SpeechRecognitionEvent {
-  results: ArrayLike<{
-    [key: number]: {
-      transcript: string;
-    };
-    length: number;
-  }>;
-}
-
-interface SpeechRecognitionInstance {
-  lang: string;
-  continuous: boolean;
-  interimResults: boolean;
-  onresult: (event: SpeechRecognitionEvent) => void;
-  onerror: () => void;
-  onend: () => void;
-  start: () => void;
-  stop: () => void;
-}
-
-type SpeechRecognitionConstructor = new () => SpeechRecognitionInstance;
-
 declare global {
   interface Window {
-    SpeechRecognition?: SpeechRecognitionConstructor;
-    webkitSpeechRecognition?: SpeechRecognitionConstructor;
+    SpeechRecognition: unknown;
+    webkitSpeechRecognition: unknown;
   }
 }
 
@@ -47,7 +25,7 @@ export default function EveningReflectionModal({ isOpen, onClose, onSave }: Prop
   const [error, setError]                 = useState('');
   const [isRecording, setIsRecording]     = useState(false);
   const [voiceSupported, setVoiceSupported] = useState(false);
-  const recognitionRef                    = useRef<SpeechRecognitionInstance | null>(null);
+  const recognitionRef                    = useRef<unknown>(null);
 
   // Form state
   const [habitDuration, setHabitDuration]           = useState(0);
@@ -73,22 +51,21 @@ export default function EveningReflectionModal({ isOpen, onClose, onSave }: Prop
           setReplacementActivity(p.personalInterests[0] || '');
         }
         // Check voice support
-        setVoiceSupported(!!(window.SpeechRecognition || window.webkitSpeechRecognition));
+        setVoiceSupported(!!((window as any).SpeechRecognition || (window as any).webkitSpeechRecognition));
       }, 0);
     }
   }, [isOpen]);
 
   const toggleVoice = () => {
     if (!voiceSupported) return;
-    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (!SR) return;
+    const SR = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
     if (!isRecording) {
       const rec = new SR();
       rec.lang = 'en-US';
       rec.continuous = true;
       rec.interimResults = false;
-      rec.onresult = (event: SpeechRecognitionEvent) => {
-        const transcript = Array.from(event.results).map((r) => r[0].transcript).join(' ');
+      rec.onresult = (event: any) => {
+        const transcript = Array.from(event.results).map((r: any) => r[0].transcript).join(' ');
         setNotes((prev) => (prev ? prev + ' ' + transcript : transcript));
       };
       rec.onerror = () => setIsRecording(false);
@@ -97,7 +74,7 @@ export default function EveningReflectionModal({ isOpen, onClose, onSave }: Prop
       rec.start();
       setIsRecording(true);
     } else {
-      recognitionRef.current?.stop();
+      (recognitionRef.current as any)?.stop();
       setIsRecording(false);
     }
   };
@@ -141,9 +118,8 @@ export default function EveningReflectionModal({ isOpen, onClose, onSave }: Prop
       setAnalysis(log);
       setStep('result');
       onSave();
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'Analysis failed. Please try again.';
-      setError(msg);
+    } catch (err: any) {
+      setError(err.message);
       setStep('form');
     }
   };
@@ -164,7 +140,7 @@ export default function EveningReflectionModal({ isOpen, onClose, onSave }: Prop
           <form onSubmit={handleSubmit} className="space-y-5">
             <div className="border-b pb-4" style={{ borderColor: 'var(--border)' }}>
               <h2 className="text-lg font-bold" style={{ color: 'var(--text-primary)' }}>Evening Reflection</h2>
-              <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>A moment to notice, not judge. Your answers shape tomorrow&apos;s plan.</p>
+              <p className="text-xs mt-0.5" style={{ color: 'var(--text-secondary)' }}>A moment to notice, not judge. Your answers shape tomorrow's plan.</p>
             </div>
 
             {error && (
@@ -301,7 +277,7 @@ export default function EveningReflectionModal({ isOpen, onClose, onSave }: Prop
 
             {/* Quote */}
             <blockquote className="text-sm italic pl-4 border-l-2" style={{ color: 'var(--accent-blue-mid)', borderColor: 'var(--accent-blue)' }}>
-              &ldquo;{analysis.aiEncouragement}&rdquo;
+              "{analysis.aiEncouragement}"
             </blockquote>
 
             {/* Cards */}
@@ -319,7 +295,7 @@ export default function EveningReflectionModal({ isOpen, onClose, onSave }: Prop
 
             <div className="p-4 rounded-xl space-y-3" style={{ background: 'var(--bg-subtle)' }}>
               <div><span className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--text-muted)' }}>Detected pattern</span><p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)' }}>{analysis.aiPattern}</p></div>
-              <div className="border-t pt-3" style={{ borderColor: 'var(--border)' }}><span className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--text-muted)' }}>Tomorrow&apos;s adjustment</span><p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)' }}>{analysis.aiAdjustment}</p></div>
+              <div className="border-t pt-3" style={{ borderColor: 'var(--border)' }}><span className="text-[10px] font-bold uppercase tracking-wider block mb-1" style={{ color: 'var(--text-muted)' }}>Tomorrow's adjustment</span><p className="text-xs leading-relaxed" style={{ color: 'var(--text-primary)' }}>{analysis.aiAdjustment}</p></div>
             </div>
 
             <div className="card-blue p-4 rounded-xl flex items-center justify-between gap-4">
