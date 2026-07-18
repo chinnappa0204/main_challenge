@@ -115,9 +115,10 @@ export interface CommitmentLetter {
   id: string;
   content: string;
   aiEnhanced?: string;
-  createdAt: string;
+  writtenAt: string;
   unlockAt: string;
   unlocked: boolean;
+  habitType?: HabitType;
 }
 
 export interface UrgeSurfSession {
