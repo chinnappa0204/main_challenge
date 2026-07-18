@@ -132,6 +132,7 @@ export interface UrgeSurfSession {
 }
 
 export interface WeeklyPattern {
+  weekKey: string;      // e.g. "2025-W28" used as storage map key
   weekStarting: string; // ISO date of Monday
   totalCheckins: number;
   avgUrgeIntensity: number;

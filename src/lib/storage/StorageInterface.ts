@@ -6,6 +6,9 @@ import {
   BookingRequest,
   NudgeLog,
   NudgeStatus,
+  CommitmentLetter,
+  UrgeSurfSession,
+  WeeklyPattern,
 } from '../types';
 
 export interface IStorageRepository {
@@ -29,6 +32,16 @@ export interface IStorageRepository {
   getNudges(): NudgeLog[];
   saveNudge(nudge: NudgeLog): void;
   updateNudgeStatus(id: string, status: NudgeStatus): void;
+
+  getCommitmentLetter(): CommitmentLetter | null;
+  saveCommitmentLetter(letter: CommitmentLetter): void;
+  markLetterUnlocked(): void;
+
+  getUrgeSurfSessions(): UrgeSurfSession[];
+  saveUrgeSurfSession(session: UrgeSurfSession): void;
+
+  getWeeklyPattern(weekKey: string): WeeklyPattern | null;
+  saveWeeklyPattern(pattern: WeeklyPattern): void;
 
   clearAll(): void;
 }
