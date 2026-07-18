@@ -48,19 +48,19 @@ const TOOLTIP_STYLE = {
 
 export default function Insights() {
   const router = useRouter();
-  const [profile, setProfile] = useState<UserProfile | null>(() => {
+  const [profile] = useState<UserProfile | null>(() => {
     if (typeof window !== 'undefined') {
       return storageRepository.getUserProfile();
     }
     return null;
   });
-  const [interventions, setInterventions] = useState<InterventionLog[]>(() => {
+  const [interventions] = useState<InterventionLog[]>(() => {
     if (typeof window !== 'undefined') {
       return storageRepository.getInterventions();
     }
     return [];
   });
-  const [reflections, setReflections] = useState<EveningReflectionLog[]>(() => {
+  const [reflections] = useState<EveningReflectionLog[]>(() => {
     if (typeof window !== 'undefined') {
       return storageRepository.getEveningReflections();
     }

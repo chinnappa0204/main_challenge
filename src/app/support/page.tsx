@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Heart, Shield, Users, Clock, CheckCircle, AlertTriangle, Sparkles, Phone, FileText, ArrowRight, X, Star
+  Heart, Clock, CheckCircle, AlertTriangle, Sparkles, Phone, FileText, ArrowRight, X, Star
 } from 'lucide-react';
 import { storageRepository } from '@/lib/storage';
 import { UserProfile, BookingRequest } from '@/lib/types';
@@ -99,7 +99,8 @@ function BookingModal({ profile: supportProfile, userProfile, onClose, onConfirm
         const data = await response.json();
         setGeneratedBrief(data.brief);
       }
-    } catch (e) {
+    } catch (err) {
+      console.error(err);
       setGeneratedBrief('Brief generation failed. A manual summary will be shared with your coach.');
     } finally {
       setIsGenerating(false);
@@ -284,7 +285,9 @@ export default function Support() {
   useEffect(() => {
     const p = storageRepository.getUserProfile();
     if (!p) { router.push('/onboarding'); return; }
-    setUserProfile(p);
+    setTimeout(() => {
+      setUserProfile(p);
+    }, 0);
   }, [router]);
 
   const handleBookingConfirmed = (booking: BookingRequest) => {

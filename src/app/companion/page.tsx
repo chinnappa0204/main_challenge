@@ -23,7 +23,7 @@ const STARTER_PROMPTS = [
 
 export default function Companion() {
   const router = useRouter();
-  const [profile, setProfile] = useState<UserProfile | null>(() => {
+  const [profile] = useState<UserProfile | null>(() => {
     if (typeof window !== 'undefined') {
       return storageRepository.getUserProfile();
     }
@@ -40,12 +40,14 @@ export default function Companion() {
       return;
     }
 
-    setMessages([{
-      id: 'welcome',
-      role: 'assistant',
-      content: `Hello. I'm your Reclaim companion — here to help you take one small step away from your screen. Let's keep our conversations brief so you can get back to real life quickly.\n\nWhat's on your mind?`,
-      timestamp: new Date(),
-    }]);
+    setTimeout(() => {
+      setMessages([{
+        id: 'welcome',
+        role: 'assistant',
+        content: `Hello. I'm your Reclaim companion — here to help you take one small step away from your screen. Let's keep our conversations brief so you can get back to real life quickly.\n\nWhat's on your mind?`,
+        timestamp: new Date(),
+      }]);
+    }, 0);
   }, [router, profile]);
 
   useEffect(() => {
@@ -56,14 +58,12 @@ export default function Companion() {
     const messageText = text || inputText.trim();
     if (!messageText || isLoading) return;
 
-    /* eslint-disable react-hooks/purity */
     const userMessage: Message = {
-      id: Math.random().toString(36).substring(7),
+      id: crypto.randomUUID(),
       role: 'user',
       content: messageText,
       timestamp: new Date(),
     };
-    /* eslint-enable react-hooks/purity */
 
     setMessages((prev) => [...prev, userMessage]);
     setInputText('');
@@ -83,30 +83,26 @@ export default function Companion() {
 
       if (response.ok) {
         const data = await response.json();
-        /* eslint-disable react-hooks/purity */
         const assistantMessage: Message = {
-          id: Math.random().toString(36).substring(7),
+          id: crypto.randomUUID(),
           role: 'assistant',
           content: data.content,
           isHighRisk: data.isHighRisk,
           timestamp: new Date(),
         };
-        /* eslint-enable react-hooks/purity */
         setMessages((prev) => [...prev, assistantMessage]);
       }
     } catch (e) {
       console.error(e);
-      /* eslint-disable react-hooks/purity */
       setMessages((prev) => [
         ...prev,
         {
-          id: Math.random().toString(36).substring(7),
+          id: crypto.randomUUID(),
           role: 'assistant',
-          content: 'I had trouble connecting. Let’s pause, take a deep breath, and try again when you are ready.',
+          content: 'I had trouble connecting. Let\'s pause, take a deep breath, and try again when you are ready.',
           timestamp: new Date(),
         },
       ]);
-      /* eslint-enable react-hooks/purity */
     } finally {
       setIsLoading(false);
     }

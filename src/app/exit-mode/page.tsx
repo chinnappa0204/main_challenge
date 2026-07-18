@@ -11,7 +11,7 @@ function ExitModeContent() {
   const searchParams = useSearchParams();
   const interventionId = searchParams.get('id');
 
-  const [intervention, setIntervention] = useState<InterventionLog | null>(() => {
+  const [intervention] = useState<InterventionLog | null>(() => {
     if (typeof window !== 'undefined' && interventionId) {
       const logs = storageRepository.getInterventions();
       return logs.find((l) => l.id === interventionId) || null;
@@ -122,14 +122,14 @@ function ExitModeContent() {
     }, 10000); // 10 seconds to dim
   };
 
-  // Dimming effect: automatically dim the screen if no interaction for 10 seconds
   useEffect(() => {
     if (isUrgeSurfing || showFeedback) return;
-    resetDimTimer();
+    setTimeout(() => {
+      resetDimTimer();
+    }, 0);
     return () => {
       if (dimTimerRef.current) clearTimeout(dimTimerRef.current);
     };
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isUrgeSurfing, showFeedback]);
 
   const handleStartMission = () => {

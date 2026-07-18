@@ -1,4 +1,4 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import { describe, it, expect, beforeEach } from 'vitest';
 import { LocalStorageRepository } from '../src/lib/storage/LocalStorageRepository';
 import { UserProfile, InterventionLog, EveningReflectionLog } from '../src/lib/types';
 
