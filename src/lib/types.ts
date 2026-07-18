@@ -110,3 +110,31 @@ export interface SupportProfile {
   rating: string;
   isDemo: boolean;
 }
+
+export interface CommitmentLetter {
+  id: string;
+  content: string;
+  aiEnhanced?: string;
+  createdAt: string;
+  unlockAt: string;
+  unlocked: boolean;
+}
+
+export interface UrgeSurfSession {
+  id: string;
+  startedAt: string;
+  completedAt?: string;
+  durationSeconds: number;
+  urgeBeforeIntensity: UrgeIntensity;
+  urgeAfterIntensity?: UrgeIntensity;
+  completed: boolean;
+}
+
+export interface WeeklyPattern {
+  weekStarting: string; // ISO date of Monday
+  totalCheckins: number;
+  avgUrgeIntensity: number;
+  avgReclaimedMinutes: number;
+  topTrigger: string;
+  mostHelpfulActivity: string;
+}
