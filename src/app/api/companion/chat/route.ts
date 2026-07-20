@@ -52,6 +52,7 @@ CRITICAL RULES:
 5. If they mention severe issues, redirect to qualified support.
 
 User profile info (if available):
+- User Name: ${profile?.name || 'Friend'}
 - Habit: ${profile?.specificHabit || 'Harmful screen habit'}
 - Triggers: ${(profile?.triggers ?? []).join(', ') || 'general triggers'}
 - Interests: ${(profile?.personalInterests ?? []).join(', ') || 'physical activity'}

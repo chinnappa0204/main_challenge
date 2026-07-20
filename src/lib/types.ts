@@ -12,6 +12,7 @@ export type HabitType =
   | 'custom';
 
 export interface UserProfile {
+  name?: string;
   habitType: HabitType;
   specificHabit: string;
   frequencyDuration: string;

@@ -11,6 +11,7 @@ import { UserProfile, HabitType, CoachingTone, CommitmentLetter } from '@/lib/ty
 
 type OnboardingStep =
   | 'intro'
+  | 'name'
   | 'habit_type'
   | 'specific_habit'
   | 'triggers'
@@ -41,6 +42,7 @@ const TONE_OPTIONS: { id: CoachingTone; label: string; desc: string }[] = [
 export default function OnboardingPage() {
   const router = useRouter();
   const [step, setStep]                 = useState<OnboardingStep>('intro');
+  const [userName, setUserName]         = useState('');
   const [habitType, setHabitType]       = useState<HabitType | ''>('');
   const [specificHabit, setSpecificHabit] = useState('');
   const [triggers, setTriggers]         = useState<string[]>([]);
@@ -70,12 +72,15 @@ export default function OnboardingPage() {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          habitType, specificHabit, triggers: [...triggers, customTrigger].filter(Boolean),
+          name: userName.trim(), habitType, specificHabit, triggers: [...triggers, customTrigger].filter(Boolean),
           riskPeriods, interests, desiredOutcome: outcome, preferredCoachingTone: tone,
         }),
       });
       const data = await res.json();
-      setExtractedProfile(data as UserProfile);
+      setExtractedProfile({
+        ...data,
+        name: userName.trim() || data.name,
+      } as UserProfile);
       setStep('review');
     } catch (e: unknown) {
       setError('Something went wrong. Please review and try again.');
@@ -130,6 +135,7 @@ export default function OnboardingPage() {
     if (!extractedProfile) return;
     storageRepository.setUserProfile({
       ...extractedProfile,
+      name: userName.trim() || extractedProfile.name,
       onboardedAt: new Date().toISOString(),
     });
     router.push('/');
@@ -158,9 +164,35 @@ export default function OnboardingPage() {
           <p className="text-sm leading-relaxed" style={{ color: 'var(--text-secondary)' }}>
             A few honest questions — no judgement, no accounts needed. Your answers help Reclaim AI build a plan that actually fits your life.
           </p>
-          <button onClick={() => setStep('habit_type')} className="btn-primary w-full py-3.5 text-sm flex items-center justify-center gap-2 cursor-pointer">
+          <button onClick={() => setStep('name')} className="btn-primary w-full py-3.5 text-sm flex items-center justify-center gap-2 cursor-pointer">
             Get started <ArrowRight className="h-4 w-4" />
           </button>
+        </div>
+      )}
+
+      {/* ── NAME ── */}
+      {step === 'name' && renderStepCard(
+        <div className="space-y-5">
+          <div>
+            <span className="badge badge-blue mb-3">Welcome</span>
+            <h2 className="text-xl font-bold" style={{ color: 'var(--text-primary)' }}>What should we call you?</h2>
+            <p className="text-xs mt-1" style={{ color: 'var(--text-secondary)' }}>Your name helps your AI companion personalize encouraging check-ins.</p>
+          </div>
+          <input
+            type="text"
+            value={userName}
+            onChange={(e) => setUserName(e.target.value)}
+            placeholder="Enter your name or nickname..."
+            className="input-field w-full px-4 py-3 text-sm"
+          />
+          <div className="flex gap-3">
+            <button onClick={() => setStep('intro')} className="btn-secondary flex items-center gap-1.5 px-4 py-2.5 text-sm cursor-pointer">
+              <ArrowLeft className="h-3.5 w-3.5" /> Back
+            </button>
+            <button onClick={() => setStep('habit_type')} disabled={!userName.trim()} className="btn-primary flex-1 py-2.5 text-sm flex items-center justify-center gap-2 cursor-pointer disabled:opacity-40">
+              Continue <ArrowRight className="h-4 w-4" />
+            </button>
+          </div>
         </div>
       )}
 

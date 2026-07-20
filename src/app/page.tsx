@@ -230,7 +230,9 @@ function TodayDashboard({ profile }: { profile: UserProfile }) {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 border-b pb-5" style={{ borderColor: 'var(--border)' }}>
         <div>
           <p className="text-xs font-bold uppercase tracking-wider mb-0.5" style={{ color: 'var(--accent-blue)' }}>Today&apos;s Journey</p>
-          <h1 className="text-2xl font-extrabold" style={{ color: 'var(--text-primary)' }}>Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}.</h1>
+          <h1 className="text-2xl font-extrabold" style={{ color: 'var(--text-primary)' }}>
+            Good {new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 18 ? 'afternoon' : 'evening'}{profile.name ? `, ${profile.name}` : ''}.
+          </h1>
           <p className="text-sm mt-0.5" style={{ color: 'var(--text-secondary)' }}>
             Focus: <span className="font-semibold" style={{ color: 'var(--text-primary)' }}>{profile.specificHabit}</span>
           </p>

@@ -8,6 +8,7 @@ export async function POST(request: Request) {
     let { transcript } = body;
 
     const {
+      name: bodyName,
       habitType: bodyHabitType,
       specificHabit: bodySpecificHabit,
       triggers: bodyTriggers,
@@ -85,6 +86,7 @@ Return only valid JSON. Do not include markdown codeblocks or text around it.`;
         }
 
         return {
+          name: bodyName || undefined,
           habitType: bodyHabitType,
           specificHabit: bodySpecificHabit,
           frequencyDuration: '2 to 3 hours daily',
