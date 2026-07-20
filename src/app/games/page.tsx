@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import ZenOrbitalGame from '@/components/games/ZenOrbitalGame';
+import ZenCascadeGame from '@/components/games/ZenCascadeGame';
 import NeonWarpGame from '@/components/games/NeonWarpGame';
-import LightShiftGame from '@/components/games/LightShiftGame';
+import ZenSliceGame from '@/components/games/ZenSliceGame';
 import CosmicBubbleGame from '@/components/games/CosmicBubbleGame';
-import { Target, Rocket, Lightbulb, Sparkles, Gamepad2, ArrowLeft } from 'lucide-react';
+import { Layers, Rocket, Zap, Sparkles, Gamepad2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 type GameId = 'stack' | 'warp' | 'light' | 'bubble';
@@ -13,10 +13,10 @@ type GameId = 'stack' | 'warp' | 'light' | 'bubble';
 const GAMES = [
   {
     id: 'stack' as GameId,
-    title: 'Zen Target Bounce',
-    subtitle: 'Orbital Pinball',
-    description: 'Aim and launch glowing Zen Orbs off bumpers for chime cascades.',
-    icon: Target,
+    title: 'Zen Tile Cascade',
+    subtitle: 'Color Match Blast',
+    description: 'Tap adjacent matching color tiles to blast particle cascades.',
+    icon: Layers,
     bgAccent: 'bg-sky-50 text-sky-600 border-sky-200',
     activeRing: 'ring-2 ring-sky-500 border-sky-300 bg-white shadow-md',
   },
@@ -31,10 +31,10 @@ const GAMES = [
   },
   {
     id: 'light' as GameId,
-    title: 'Mindful Light Shift',
-    subtitle: 'Laser & Mirror Puzzle',
-    description: 'Rotate optical mirrors to reflect laser beams onto target crystals.',
-    icon: Lightbulb,
+    title: 'Zen Slice Arcade',
+    subtitle: 'Blade Ninja Action',
+    description: 'Swipe your cursor across floating targets to slice combos.',
+    icon: Zap,
     bgAccent: 'bg-amber-50 text-amber-600 border-amber-200',
     activeRing: 'ring-2 ring-amber-500 border-amber-300 bg-white shadow-md',
   },
@@ -108,9 +108,9 @@ export default function GamesHubPage() {
 
       {/* Active Game Stage Container */}
       <div className="w-full flex justify-center">
-        {activeGame === 'stack' && <ZenOrbitalGame />}
+        {activeGame === 'stack' && <ZenCascadeGame />}
         {activeGame === 'warp' && <NeonWarpGame />}
-        {activeGame === 'light' && <LightShiftGame />}
+        {activeGame === 'light' && <ZenSliceGame />}
         {activeGame === 'bubble' && <CosmicBubbleGame />}
       </div>
     </div>
