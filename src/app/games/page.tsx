@@ -15,10 +15,10 @@ const GAMES = [
     id: 'stack' as GameId,
     title: 'Zen Stack',
     subtitle: 'Timing & Precision',
-    description: 'Stack moving glowing neon blocks with perfect timing to build a tower.',
+    description: 'Stack moving blocks with perfect timing on a crisp light stage.',
     icon: Layers,
-    color: 'from-cyan-500 to-blue-600',
-    borderColor: 'border-cyan-500/30',
+    bgAccent: 'bg-sky-50 text-sky-600 border-sky-200',
+    activeRing: 'ring-2 ring-sky-500 border-sky-300 bg-white shadow-md',
   },
   {
     id: 'warp' as GameId,
@@ -26,8 +26,8 @@ const GAMES = [
     subtitle: 'Particle Arcade',
     description: 'Control your energy orb, collect Zen Orbs, and grab power-ups.',
     icon: Rocket,
-    color: 'from-emerald-500 to-cyan-600',
-    borderColor: 'border-emerald-500/30',
+    bgAccent: 'bg-emerald-50 text-emerald-600 border-emerald-200',
+    activeRing: 'ring-2 ring-emerald-500 border-emerald-300 bg-white shadow-md',
   },
   {
     id: 'light' as GameId,
@@ -35,8 +35,8 @@ const GAMES = [
     subtitle: 'Laser & Mirror Puzzle',
     description: 'Rotate optical mirrors to reflect laser beams onto target crystals.',
     icon: Lightbulb,
-    color: 'from-cyan-400 to-emerald-500',
-    borderColor: 'border-cyan-400/30',
+    bgAccent: 'bg-amber-50 text-amber-600 border-amber-200',
+    activeRing: 'ring-2 ring-amber-500 border-amber-300 bg-white shadow-md',
   },
   {
     id: 'bubble' as GameId,
@@ -44,8 +44,8 @@ const GAMES = [
     subtitle: 'Tactile Stress Relief',
     description: 'Pop bouncing translucent bubbles to trigger particle combo cascades.',
     icon: Sparkles,
-    color: 'from-purple-500 to-indigo-600',
-    borderColor: 'border-purple-500/30',
+    bgAccent: 'bg-purple-50 text-purple-600 border-purple-200',
+    activeRing: 'ring-2 ring-purple-500 border-purple-300 bg-white shadow-md',
   },
 ];
 
@@ -53,25 +53,25 @@ export default function GamesHubPage() {
   const [activeGame, setActiveGame] = useState<GameId>('stack');
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 fade-in">
+    <div className="mx-auto max-w-5xl px-4 py-8 sm:px-6 fade-in" style={{ backgroundColor: 'var(--bg-page)' }}>
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <div>
-          <div className="flex items-center gap-2 text-cyan-400 font-semibold text-xs tracking-wider uppercase mb-1">
+          <div className="flex items-center gap-2 font-bold text-xs tracking-wider uppercase mb-1" style={{ color: 'var(--accent-blue-mid)' }}>
             <Gamepad2 className="w-4 h-4" />
             <span>Mindful Refreshment Zone</span>
           </div>
-          <h1 className="text-3xl font-extrabold tracking-tight text-slate-100">
+          <h1 className="text-3xl font-extrabold tracking-tight" style={{ color: 'var(--text-primary)' }}>
             Dopamine Reset Mini-Games
           </h1>
-          <p className="text-slate-400 text-sm mt-1">
+          <p className="text-sm mt-1" style={{ color: 'var(--text-secondary)' }}>
             4 minimal, satisfying games designed to redirect urge loops and refresh your focus.
           </p>
         </div>
 
         <Link
           href="/"
-          className="inline-flex items-center gap-2 px-4 py-2 bg-slate-900 border border-slate-800 hover:border-slate-700 rounded-xl text-slate-300 text-xs font-semibold transition-all self-start sm:self-auto cursor-pointer"
+          className="inline-flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 hover:border-slate-300 rounded-xl text-slate-700 text-xs font-semibold shadow-xs transition-all self-start sm:self-auto cursor-pointer"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Today</span>
@@ -90,17 +90,17 @@ export default function GamesHubPage() {
               onClick={() => setActiveGame(g.id)}
               className={`flex flex-col p-4 rounded-2xl border text-left transition-all cursor-pointer ${
                 isActive
-                  ? `bg-slate-900 ${g.borderColor} shadow-lg shadow-cyan-950/40 ring-1 ring-cyan-500/40`
-                  : 'bg-slate-950/60 border-slate-800/80 hover:bg-slate-900/60 hover:border-slate-700'
+                  ? g.activeRing
+                  : 'bg-white border-slate-200 hover:border-slate-300 hover:shadow-xs'
               }`}
             >
               <div
-                className={`w-10 h-10 rounded-xl bg-gradient-to-br ${g.color} flex items-center justify-center text-white mb-3 shadow-md`}
+                className={`w-10 h-10 rounded-xl border ${g.bgAccent} flex items-center justify-center mb-3 shadow-xs`}
               >
                 <Icon className="w-5 h-5" />
               </div>
-              <span className="font-bold text-slate-100 text-sm leading-tight">{g.title}</span>
-              <span className="text-[11px] text-slate-400 mt-0.5 font-medium">{g.subtitle}</span>
+              <span className="font-bold text-sm leading-tight" style={{ color: 'var(--text-primary)' }}>{g.title}</span>
+              <span className="text-[11px] mt-0.5 font-medium" style={{ color: 'var(--text-secondary)' }}>{g.subtitle}</span>
             </button>
           );
         })}

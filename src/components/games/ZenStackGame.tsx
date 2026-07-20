@@ -55,7 +55,7 @@ export default function ZenStackGame() {
       width: 140,
       depth: 140,
       y: 0,
-      color: 'hsl(210, 80%, 60%)',
+      color: 'hsl(205, 90%, 55%)',
       direction: 'x',
       speed: 3,
     },
@@ -66,8 +66,8 @@ export default function ZenStackGame() {
   });
 
   const getHslColor = (index: number) => {
-    const hue = (200 + index * 12) % 360;
-    return `hsl(${hue}, 75%, 60%)`;
+    const hue = (195 + index * 14) % 360;
+    return `hsl(${hue}, 85%, 55%)`;
   };
 
   useEffect(() => {
@@ -85,7 +85,7 @@ export default function ZenStackGame() {
         width: baseWidth,
         depth: baseDepth,
         y: 0,
-        color: 'hsl(210, 80%, 50%)',
+        color: 'hsl(205, 90%, 50%)',
       },
     ];
 
@@ -139,7 +139,6 @@ export default function ZenStackGame() {
     const overlap = maxOverlap - Math.abs(diff);
 
     if (overlap <= 0) {
-      // Missed completely -> Game Over
       setGameOver(true);
       soundSynth.playBump();
       return;
@@ -152,7 +151,6 @@ export default function ZenStackGame() {
     let newZ = currentBlock.z;
 
     if (isPerfect) {
-      // Perfect placement alignment!
       newX = prevBlock.x;
       newZ = prevBlock.z;
       const nextCombo = combo + 1;
@@ -209,10 +207,9 @@ export default function ZenStackGame() {
     gameStateRef.current.targetCameraY = stack.length * 20;
   }, [gameOver, combo, highScore]);
 
-  // Main rendering loop
+  // Render loop
   useEffect(() => {
     initGame();
-
     let animId: number;
 
     const render = () => {
@@ -225,10 +222,8 @@ export default function ZenStackGame() {
       const height = canvas.height;
       const state = gameStateRef.current;
 
-      // Update Camera
       state.cameraY += (state.targetCameraY - state.cameraY) * 0.1;
 
-      // Update Current Block position
       if (!gameOver) {
         const cur = state.currentBlock;
         if (cur.direction === 'x') {
@@ -240,21 +235,20 @@ export default function ZenStackGame() {
         }
       }
 
-      // Draw background
-      ctx.fillStyle = '#0f172a';
+      // Draw Light Background
+      ctx.fillStyle = '#F8FAFC';
       ctx.fillRect(0, 0, width, height);
 
-      // Draw subtle grid ambient gradient
+      // Subtle light grid gradient
       const grad = ctx.createRadialGradient(width / 2, height / 2, 50, width / 2, height / 2, width);
-      grad.addColorStop(0, '#1e293b');
-      grad.addColorStop(1, '#0f172a');
+      grad.addColorStop(0, '#FFFFFF');
+      grad.addColorStop(1, '#F1F5F9');
       ctx.fillStyle = grad;
       ctx.fillRect(0, 0, width, height);
 
       ctx.save();
       ctx.translate(width / 2, height / 2 + 120 + state.cameraY);
 
-      // Isometric projection helper
       const project = (x: number, y: number, z: number) => {
         const isoX = (x - z) * 0.866;
         const isoY = (x + z) * 0.5 - y;
@@ -285,12 +279,12 @@ export default function ZenStackGame() {
         ctx.lineTo(p4Top.x, p4Top.y);
         ctx.closePath();
         ctx.fill();
-        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(255,255,255,0.7)';
+        ctx.lineWidth = 1.5;
         ctx.stroke();
 
         // Right Face
-        ctx.fillStyle = 'rgba(0,0,0,0.2)';
+        ctx.fillStyle = 'rgba(0,0,0,0.12)';
         ctx.beginPath();
         ctx.moveTo(p2Top.x, p2Top.y);
         ctx.lineTo(p3Top.x, p3Top.y);
@@ -302,7 +296,7 @@ export default function ZenStackGame() {
         ctx.fill();
 
         // Left Face
-        ctx.fillStyle = 'rgba(0,0,0,0.4)';
+        ctx.fillStyle = 'rgba(0,0,0,0.22)';
         ctx.beginPath();
         ctx.moveTo(p3Top.x, p3Top.y);
         ctx.lineTo(p4Top.x, p4Top.y);
@@ -312,20 +306,17 @@ export default function ZenStackGame() {
         ctx.fill();
 
         if (isCurrent) {
-          ctx.shadowColor = block.color;
-          ctx.shadowBlur = 15;
+          ctx.shadowColor = 'rgba(14, 165, 233, 0.4)';
+          ctx.shadowBlur = 12;
         }
       };
 
-      // Draw Stack
       state.stack.forEach((b) => drawIsometricBlock(b));
 
-      // Draw Current Moving Block
       if (!gameOver) {
         drawIsometricBlock(state.currentBlock as Block, true);
       }
 
-      // Draw & update particles
       for (let i = state.particles.length - 1; i >= 0; i--) {
         const p = state.particles[i];
         p.x += p.vx;
@@ -356,24 +347,24 @@ export default function ZenStackGame() {
   }, [initGame, gameOver]);
 
   return (
-    <div className="relative flex flex-col items-center justify-center w-full min-h-[520px] rounded-2xl bg-slate-900 border border-slate-800 overflow-hidden shadow-2xl p-4">
+    <div className="relative flex flex-col items-center justify-center w-full min-h-[520px] rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm p-4">
       {/* Top Header Bar */}
-      <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10 pointer-events-auto">
+      <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
-          <div className="bg-slate-800/80 backdrop-blur border border-slate-700/60 px-4 py-2 rounded-xl text-white font-bold text-lg flex items-center gap-2 shadow-lg">
-            <span className="text-xs text-slate-400 font-semibold uppercase tracking-wider">Score</span>
-            <span className="text-cyan-400 text-xl">{score}</span>
+          <div className="bg-white/90 backdrop-blur border border-slate-200 px-4 py-2 rounded-xl text-slate-800 font-bold text-lg flex items-center gap-2 shadow-xs">
+            <span className="text-xs text-slate-500 font-semibold uppercase tracking-wider">Score</span>
+            <span className="text-sky-600 text-xl">{score}</span>
           </div>
           {combo > 1 && (
-            <div className="bg-emerald-500/20 border border-emerald-500/40 px-3 py-1.5 rounded-xl text-emerald-400 font-extrabold text-xs animate-bounce">
+            <div className="bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-xl text-emerald-600 font-extrabold text-xs animate-bounce shadow-xs">
               {combo}x PERFECT COMBO!
             </div>
           )}
         </div>
 
         <div className="flex items-center gap-2">
-          <div className="bg-slate-800/80 backdrop-blur border border-slate-700/60 px-3 py-1.5 rounded-xl text-slate-300 text-xs font-semibold flex items-center gap-1.5">
-            <Trophy className="w-3.5 h-3.5 text-amber-400" />
+          <div className="bg-white/90 backdrop-blur border border-slate-200 px-3 py-1.5 rounded-xl text-slate-700 text-xs font-semibold flex items-center gap-1.5 shadow-xs">
+            <Trophy className="w-3.5 h-3.5 text-amber-500" />
             <span>Best: {highScore}</span>
           </div>
           <button
@@ -382,14 +373,14 @@ export default function ZenStackGame() {
               setIsMuted(next);
               soundSynth.setMuted(next);
             }}
-            className="p-2.5 bg-slate-800/80 border border-slate-700/60 hover:bg-slate-700 rounded-xl text-slate-300 transition-all cursor-pointer"
+            className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 transition-all cursor-pointer shadow-xs"
           >
-            {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+            {isMuted ? <VolumeX className="w-4 h-4 text-red-500" /> : <Volume2 className="w-4 h-4 text-emerald-600" />}
           </button>
         </div>
       </div>
 
-      {/* Canvas Game Area */}
+      {/* Canvas */}
       <canvas
         ref={canvasRef}
         width={600}
@@ -398,24 +389,23 @@ export default function ZenStackGame() {
         className="w-full h-[460px] max-w-[600px] rounded-xl cursor-pointer touch-none"
       />
 
-      {/* Tap Instruction */}
       {!gameOver && (
-        <div className="absolute bottom-6 text-slate-400 text-xs font-medium bg-slate-900/80 backdrop-blur px-4 py-1.5 rounded-full border border-slate-800 pointer-events-none animate-pulse">
+        <div className="absolute bottom-6 text-slate-500 text-xs font-semibold bg-white/90 backdrop-blur px-4 py-1.5 rounded-full border border-slate-200 shadow-xs pointer-events-none animate-pulse">
           Tap or Click anywhere to drop block
         </div>
       )}
 
       {/* Game Over Modal */}
       {gameOver && (
-        <div className="absolute inset-0 bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center z-20 fade-in p-6">
-          <h2 className="text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 mb-2">
+        <div className="absolute inset-0 bg-white/90 backdrop-blur-md flex flex-col items-center justify-center z-20 fade-in p-6">
+          <h2 className="text-3xl font-extrabold text-slate-800 mb-2">
             Mindful Stack Complete!
           </h2>
-          <p className="text-slate-400 text-sm mb-6">You built a tower of <span className="text-cyan-300 font-bold">{score}</span> blocks.</p>
+          <p className="text-slate-600 text-sm mb-6">You built a tower of <span className="text-sky-600 font-bold">{score}</span> blocks.</p>
 
           <button
             onClick={initGame}
-            className="flex items-center gap-2 px-6 py-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-white font-bold rounded-xl shadow-lg shadow-cyan-500/25 transition-all transform hover:scale-105 cursor-pointer"
+            className="flex items-center gap-2 px-6 py-3 bg-sky-500 hover:bg-sky-600 text-white font-bold rounded-xl shadow-md transition-all transform hover:scale-105 cursor-pointer"
           >
             <RotateCcw className="w-4 h-4" />
             Play Again

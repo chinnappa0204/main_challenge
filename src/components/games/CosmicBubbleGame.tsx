@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { soundSynth } from '@/lib/audio';
-import { RotateCcw, Volume2, VolumeX, Sparkles } from 'lucide-react';
+import { Volume2, VolumeX, Sparkles } from 'lucide-react';
 
 interface Bubble {
   id: string;
@@ -36,11 +36,11 @@ const MANTRAS = [
 ];
 
 const COLORS = [
-  'hsl(190, 90%, 55%)',
-  'hsl(210, 85%, 60%)',
-  'hsl(270, 80%, 65%)',
-  'hsl(160, 85%, 55%)',
-  'hsl(330, 80%, 60%)',
+  'hsl(195, 85%, 60%)',
+  'hsl(215, 80%, 65%)',
+  'hsl(265, 75%, 70%)',
+  'hsl(155, 80%, 60%)',
+  'hsl(335, 75%, 65%)',
 ];
 
 export default function CosmicBubbleGame() {
@@ -95,7 +95,7 @@ export default function CosmicBubbleGame() {
       animId: 0,
     };
     setPoppedCount(0);
-    setLastMantra('Tap any cosmic bubble to release focus!');
+    setLastMantra('Tap any bubble to release focus!');
   }, []);
 
   const handlePointerDown = (e: React.PointerEvent<HTMLCanvasElement>) => {
@@ -116,7 +116,6 @@ export default function CosmicBubbleGame() {
         setLastMantra(b.mantra);
         setPoppedCount((prev) => prev + 1);
 
-        // Remove bubble and respawn new one
         bubbles.splice(i, 1);
         bubbles.push(createBubble(canvas.width, canvas.height));
         break;
@@ -138,8 +137,8 @@ export default function CosmicBubbleGame() {
       const height = canvas.height;
       const { bubbles, particles } = stateRef.current;
 
-      // Draw dark cosmic background
-      ctx.fillStyle = '#0b0f19';
+      // Draw Light Background
+      ctx.fillStyle = '#F8FAFC';
       ctx.fillRect(0, 0, width, height);
 
       // Move & draw bubbles
@@ -151,21 +150,18 @@ export default function CosmicBubbleGame() {
         if (b.y < b.radius || b.y > height - b.radius) b.vy *= -1;
 
         ctx.save();
-        ctx.shadowColor = b.color;
-        ctx.shadowBlur = 12;
-
         const grad = ctx.createRadialGradient(b.x - b.radius * 0.3, b.y - b.radius * 0.3, 2, b.x, b.y, b.radius);
-        grad.addColorStop(0, 'rgba(255, 255, 255, 0.9)');
-        grad.addColorStop(0.4, b.color);
-        grad.addColorStop(1, 'rgba(15, 23, 42, 0.4)');
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0.95)');
+        grad.addColorStop(0.5, b.color);
+        grad.addColorStop(1, 'rgba(241, 245, 249, 0.6)');
 
         ctx.fillStyle = grad;
         ctx.beginPath();
         ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
         ctx.fill();
 
-        ctx.strokeStyle = 'rgba(255, 255, 255, 0.6)';
-        ctx.lineWidth = 1.5;
+        ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
+        ctx.lineWidth = 2;
         ctx.stroke();
         ctx.restore();
       });
@@ -199,14 +195,14 @@ export default function CosmicBubbleGame() {
   }, [initGame, poppedCount]);
 
   return (
-    <div className="relative flex flex-col items-center justify-center w-full min-h-[520px] rounded-2xl bg-slate-950 border border-slate-800 overflow-hidden shadow-2xl p-4">
+    <div className="relative flex flex-col items-center justify-center w-full min-h-[520px] rounded-2xl bg-white border border-slate-200 overflow-hidden shadow-sm p-4">
       {/* Header Bar */}
       <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
         <div className="flex items-center gap-3">
-          <div className="bg-slate-900/90 border border-slate-800 px-4 py-2 rounded-xl text-white font-bold text-sm flex items-center gap-2 shadow-lg">
-            <Sparkles className="w-4 h-4 text-purple-400" />
+          <div className="bg-white/90 border border-slate-200 px-4 py-2 rounded-xl text-slate-800 font-bold text-sm flex items-center gap-2 shadow-xs">
+            <Sparkles className="w-4 h-4 text-purple-600" />
             <span>Bubbles Released:</span>
-            <span className="text-purple-400 text-lg">{poppedCount}</span>
+            <span className="text-purple-600 text-lg">{poppedCount}</span>
           </div>
         </div>
 
@@ -217,16 +213,16 @@ export default function CosmicBubbleGame() {
               setIsMuted(next);
               soundSynth.setMuted(next);
             }}
-            className="p-2.5 bg-slate-900/90 border border-slate-800 hover:bg-slate-800 rounded-xl text-slate-300 transition-all cursor-pointer"
+            className="p-2.5 bg-white border border-slate-200 hover:bg-slate-50 rounded-xl text-slate-700 transition-all cursor-pointer shadow-xs"
           >
-            {isMuted ? <VolumeX className="w-4 h-4 text-red-400" /> : <Volume2 className="w-4 h-4 text-emerald-400" />}
+            {isMuted ? <VolumeX className="w-4 h-4 text-red-500" /> : <Volume2 className="w-4 h-4 text-emerald-600" />}
           </button>
         </div>
       </div>
 
       {/* Mantra Overlay */}
       {lastMantra && (
-        <div className="absolute top-18 z-10 bg-slate-900/90 border border-purple-500/30 px-4 py-2 rounded-xl text-purple-200 text-xs font-semibold shadow-lg animate-fade-in text-center max-w-xs">
+        <div className="absolute top-18 z-10 bg-white/90 border border-purple-200 px-4 py-2 rounded-xl text-purple-800 text-xs font-semibold shadow-xs animate-fade-in text-center max-w-xs">
           ✨ "{lastMantra}"
         </div>
       )}
