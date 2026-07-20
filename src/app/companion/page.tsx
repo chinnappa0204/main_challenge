@@ -23,30 +23,29 @@ const STARTER_PROMPTS = [
 
 export default function Companion() {
   const router = useRouter();
-  const [profile, setProfile] = useState<UserProfile | null>(() => {
+  const [profile] = useState<UserProfile | null>(() => {
     if (typeof window !== 'undefined') {
       return storageRepository.getUserProfile();
     }
     return null;
   });
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<Message[]>(() => [
+    {
+      id: 'welcome',
+      role: 'assistant',
+      content: `Hello. I'm your Reclaim companion — here to help you take one small step away from your screen. Let's keep our conversations brief so you can get back to real life quickly.\n\nWhat's on your mind?`,
+      timestamp: new Date(),
+    }
+  ]);
   const [inputText, setInputText] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (!profile) {
+    if (typeof window !== 'undefined' && !storageRepository.getUserProfile()) {
       router.push('/onboarding');
-      return;
     }
-
-    setMessages([{
-      id: 'welcome',
-      role: 'assistant',
-      content: `Hello. I'm your Reclaim companion — here to help you take one small step away from your screen. Let's keep our conversations brief so you can get back to real life quickly.\n\nWhat's on your mind?`,
-      timestamp: new Date(),
-    }]);
-  }, [router, profile]);
+  }, [router]);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });

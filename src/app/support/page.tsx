@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import {
-  Heart, Shield, Users, Clock, CheckCircle, AlertTriangle, Sparkles, Phone, FileText, ArrowRight, X, Star
+  Heart, Clock, CheckCircle, AlertTriangle, Sparkles, Phone, FileText, ArrowRight, X, Star
 } from 'lucide-react';
 import { storageRepository } from '@/lib/storage';
 import { UserProfile, BookingRequest } from '@/lib/types';
@@ -99,7 +99,8 @@ function BookingModal({ profile: supportProfile, userProfile, onClose, onConfirm
         const data = await response.json();
         setGeneratedBrief(data.brief);
       }
-    } catch (e) {
+    } catch (error) {
+      console.error('Failed to generate brief:', error);
       setGeneratedBrief('Brief generation failed. A manual summary will be shared with your coach.');
     } finally {
       setIsGenerating(false);
@@ -277,14 +278,19 @@ function BookingModal({ profile: supportProfile, userProfile, onClose, onConfirm
 
 export default function Support() {
   const router = useRouter();
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(null);
+  const [userProfile] = useState<UserProfile | null>(() => {
+    if (typeof window !== 'undefined') {
+      return storageRepository.getUserProfile();
+    }
+    return null;
+  });
   const [selectedProfile, setSelectedProfile] = useState<typeof SUPPORT_PROFILES[0] | null>(null);
   const [confirmedBooking, setConfirmedBooking] = useState<BookingRequest | null>(null);
 
   useEffect(() => {
-    const p = storageRepository.getUserProfile();
-    if (!p) { router.push('/onboarding'); return; }
-    setUserProfile(p);
+    if (typeof window !== 'undefined' && !storageRepository.getUserProfile()) {
+      router.push('/onboarding');
+    }
   }, [router]);
 
   const handleBookingConfirmed = (booking: BookingRequest) => {

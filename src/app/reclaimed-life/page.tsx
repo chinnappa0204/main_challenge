@@ -17,69 +17,70 @@ interface TimeCategory {
 
 export default function ReclaimedLife() {
   const router = useRouter();
-  const [profile, setProfile] = useState<UserProfile | null>(null);
-  const [interventions, setInterventions] = useState<InterventionLog[]>([]);
-  const [reflections, setReflections] = useState<EveningReflectionLog[]>([]);
-  const [timeCategories, setTimeCategories] = useState<TimeCategory[]>([]);
+  const [interventions] = useState<InterventionLog[]>(() => {
+    if (typeof window !== 'undefined') {
+      return storageRepository.getInterventions();
+    }
+    return [];
+  });
+  const [reflections] = useState<EveningReflectionLog[]>(() => {
+    if (typeof window !== 'undefined') {
+      return storageRepository.getEveningReflections();
+    }
+    return [];
+  });
 
   useEffect(() => {
-    const p = storageRepository.getUserProfile();
-    if (!p) { router.push('/onboarding'); return; }
-    setProfile(p);
-
-    const logs = storageRepository.getInterventions();
-    const refs = storageRepository.getEveningReflections();
-    setInterventions(logs);
-    setReflections(refs);
-
-    const completedMissions = logs.filter((l) => l.completed);
-    const categoryMap: Record<string, number> = {};
-
-    completedMissions.forEach((m) => {
-      const title = m.missionTitle.toLowerCase();
-      let category = 'Other Activities';
-
-      if (title.includes('walk') || title.includes('outdoor') || title.includes('move')) category = 'Walking & Movement';
-      else if (title.includes('music') || title.includes('song') || title.includes('listen')) category = 'Music & Listening';
-      else if (title.includes('breath') || title.includes('calm') || title.includes('reset')) category = 'Breathing & Calm';
-      else if (title.includes('connect') || title.includes('friend') || title.includes('call')) category = 'Social Connection';
-      else if (title.includes('read') || title.includes('book') || title.includes('learn')) category = 'Reading & Learning';
-      else if (title.includes('sketch') || title.includes('draw') || title.includes('photo') || title.includes('create')) category = 'Creative Activities';
-
-      categoryMap[category] = (categoryMap[category] || 0) + m.availableTime;
-    });
-
-    const colors: Record<string, string> = {
-      'Walking & Movement': 'var(--success)',
-      'Music & Listening': 'var(--accent-blue-mid)',
-      'Breathing & Calm': 'var(--accent-blue)',
-      'Social Connection': 'var(--accent-orange)',
-      'Reading & Learning': 'var(--warning)',
-      'Creative Activities': '#8b5cf6',
-      'Other Activities': 'var(--text-secondary)',
-    };
-
-    const icons: Record<string, React.ReactNode> = {
-      'Walking & Movement': <Activity className="h-4 w-4" />,
-      'Music & Listening': <Star className="h-4 w-4" />,
-      'Breathing & Calm': <Zap className="h-4 w-4" />,
-      'Social Connection': <Users className="h-4 w-4" />,
-      'Reading & Learning': <TrendingUp className="h-4 w-4" />,
-      'Creative Activities': <Trophy className="h-4 w-4" />,
-      'Other Activities': <Compass className="h-4 w-4" />,
-    };
-
-    const cats: TimeCategory[] = Object.entries(categoryMap)
-      .map(([name, minutes]) => ({
-        name,
-        minutes,
-        colorClass: colors[name] || 'var(--text-muted)',
-        icon: icons[name] || <Compass className="h-4 w-4" />,
-      }))
-      .sort((a, b) => b.minutes - a.minutes);
-
-    setTimeCategories(cats);
+    if (typeof window !== 'undefined' && !storageRepository.getUserProfile()) {
+      router.push('/onboarding');
+    }
   }, [router]);
+
+  const completedMissions = interventions.filter((l) => l.completed);
+  const categoryMap: Record<string, number> = {};
+
+  completedMissions.forEach((m) => {
+    const title = m.missionTitle.toLowerCase();
+    let category = 'Other Activities';
+
+    if (title.includes('walk') || title.includes('outdoor') || title.includes('move')) category = 'Walking & Movement';
+    else if (title.includes('music') || title.includes('song') || title.includes('listen')) category = 'Music & Listening';
+    else if (title.includes('breath') || title.includes('calm') || title.includes('reset')) category = 'Breathing & Calm';
+    else if (title.includes('connect') || title.includes('friend') || title.includes('call')) category = 'Social Connection';
+    else if (title.includes('read') || title.includes('book') || title.includes('learn')) category = 'Reading & Learning';
+    else if (title.includes('sketch') || title.includes('draw') || title.includes('photo') || title.includes('create')) category = 'Creative Activities';
+
+    categoryMap[category] = (categoryMap[category] || 0) + m.availableTime;
+  });
+
+  const colors: Record<string, string> = {
+    'Walking & Movement': 'var(--success)',
+    'Music & Listening': 'var(--accent-blue-mid)',
+    'Breathing & Calm': 'var(--accent-blue)',
+    'Social Connection': 'var(--accent-orange)',
+    'Reading & Learning': 'var(--warning)',
+    'Creative Activities': '#8b5cf6',
+    'Other Activities': 'var(--text-secondary)',
+  };
+
+  const icons: Record<string, React.ReactNode> = {
+    'Walking & Movement': <Activity className="h-4 w-4" />,
+    'Music & Listening': <Star className="h-4 w-4" />,
+    'Breathing & Calm': <Zap className="h-4 w-4" />,
+    'Social Connection': <Users className="h-4 w-4" />,
+    'Reading & Learning': <TrendingUp className="h-4 w-4" />,
+    'Creative Activities': <Trophy className="h-4 w-4" />,
+    'Other Activities': <Compass className="h-4 w-4" />,
+  };
+
+  const timeCategories: TimeCategory[] = Object.entries(categoryMap)
+    .map(([name, minutes]) => ({
+      name,
+      minutes,
+      colorClass: colors[name] || 'var(--text-muted)',
+      icon: icons[name] || <Compass className="h-4 w-4" />,
+    }))
+    .sort((a, b) => b.minutes - a.minutes);
 
   const totalReclaimedMins = reflections.reduce((sum, r) => sum + r.reclaimedTimeMinutes, 0);
   const totalReclaimedHours = Math.floor(totalReclaimedMins / 60);

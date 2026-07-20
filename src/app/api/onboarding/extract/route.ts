@@ -4,10 +4,38 @@ import { UserProfile, HabitType, CoachingTone } from '@/lib/types';
 
 export async function POST(request: Request) {
   try {
-    const { transcript } = await request.json();
+    const body = await request.json();
+    let { transcript } = body;
 
-    if (!transcript || typeof transcript !== 'string') {
-      return NextResponse.json({ error: 'Transcript is required' }, { status: 400 });
+    const {
+      habitType: bodyHabitType,
+      specificHabit: bodySpecificHabit,
+      triggers: bodyTriggers,
+      riskPeriods: bodyRiskPeriods,
+      interests: bodyInterests,
+      desiredOutcome: bodyDesiredOutcome,
+      preferredCoachingTone: bodyPreferredCoachingTone,
+    } = body;
+
+    if (!transcript) {
+      if (bodyHabitType && bodySpecificHabit) {
+        transcript = `
+AI: What habit are you working on?
+User: My habit category is ${bodyHabitType}. More specifically, ${bodySpecificHabit}.
+AI: What usually triggers the urge?
+User: Triggers: ${(bodyTriggers || []).join(', ')}.
+AI: When are you most at risk?
+User: Risk periods: ${(bodyRiskPeriods || []).join(', ')}.
+AI: What do you genuinely enjoy?
+User: My interests and activities I enjoy are: ${bodyInterests || ''}.
+AI: What would change if this habit were gone?
+User: Desired outcome: ${bodyDesiredOutcome || ''}.
+AI: How would you like to be coached?
+User: Preferred coaching tone: ${bodyPreferredCoachingTone || ''}.
+`;
+      } else {
+        return NextResponse.json({ error: 'Transcript or structured habit profile fields are required' }, { status: 400 });
+      }
     }
 
     const systemInstruction = `You are a professional behavioral change architect. 
@@ -34,6 +62,44 @@ Return only valid JSON. Do not include markdown codeblocks or text around it.`;
     const prompt = `Conversational Transcript:\n${transcript}\n\nAnalyze and output JSON:`;
 
     const fallbackGenerator = (): UserProfile => {
+      // If direct fields are provided in the body, return them deterministically
+      if (bodyHabitType && bodySpecificHabit) {
+        let personalInterests: string[] = [];
+        if (typeof bodyInterests === 'string') {
+          personalInterests = bodyInterests.split(',').map((s: string) => s.trim()).filter(Boolean);
+        } else if (Array.isArray(bodyInterests)) {
+          personalInterests = bodyInterests;
+        }
+
+        const fallbackEmotions: string[] = [];
+        const inputTriggers: string[] = bodyTriggers || [];
+        inputTriggers.forEach((t: string) => {
+          const lower = t.toLowerCase();
+          if (lower.includes('stress')) fallbackEmotions.push('stressed');
+          if (lower.includes('bored')) fallbackEmotions.push('bored');
+          if (lower.includes('lonel')) fallbackEmotions.push('lonely');
+          if (lower.includes('fatigue') || lower.includes('tired')) fallbackEmotions.push('low');
+        });
+        if (fallbackEmotions.length === 0) {
+          fallbackEmotions.push('automatic urge');
+        }
+
+        return {
+          habitType: bodyHabitType,
+          specificHabit: bodySpecificHabit,
+          frequencyDuration: '2 to 3 hours daily',
+          triggers: inputTriggers,
+          emotions: fallbackEmotions,
+          riskPeriods: bodyRiskPeriods || [],
+          personalInterests,
+          desiredOutcome: bodyDesiredOutcome || '',
+          preferredCoachingTone: bodyPreferredCoachingTone || 'gentle',
+          previouslyAttemptedStrategies: ['putting phone in another room', 'app block timer'],
+          trustedSupportPreferences: 'An accountability guide or close friend checking in weekly',
+          onboardedAt: new Date().toISOString(),
+        };
+      }
+
       // Basic fallback parsing of transcript
       const text = transcript.toLowerCase();
       let habitType: HabitType = 'phone-social';
