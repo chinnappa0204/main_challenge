@@ -1,11 +1,11 @@
 'use client';
 
 import React, { useState } from 'react';
-import ZenStackGame from '@/components/games/ZenStackGame';
+import ZenOrbitalGame from '@/components/games/ZenOrbitalGame';
 import NeonWarpGame from '@/components/games/NeonWarpGame';
 import LightShiftGame from '@/components/games/LightShiftGame';
 import CosmicBubbleGame from '@/components/games/CosmicBubbleGame';
-import { Layers, Rocket, Lightbulb, Sparkles, Gamepad2, ArrowLeft } from 'lucide-react';
+import { Target, Rocket, Lightbulb, Sparkles, Gamepad2, ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 
 type GameId = 'stack' | 'warp' | 'light' | 'bubble';
@@ -13,10 +13,10 @@ type GameId = 'stack' | 'warp' | 'light' | 'bubble';
 const GAMES = [
   {
     id: 'stack' as GameId,
-    title: 'Zen Stack',
-    subtitle: 'Timing & Precision',
-    description: 'Stack moving blocks with perfect timing on a crisp light stage.',
-    icon: Layers,
+    title: 'Zen Target Bounce',
+    subtitle: 'Orbital Pinball',
+    description: 'Aim and launch glowing Zen Orbs off bumpers for chime cascades.',
+    icon: Target,
     bgAccent: 'bg-sky-50 text-sky-600 border-sky-200',
     activeRing: 'ring-2 ring-sky-500 border-sky-300 bg-white shadow-md',
   },
@@ -108,7 +108,7 @@ export default function GamesHubPage() {
 
       {/* Active Game Stage Container */}
       <div className="w-full flex justify-center">
-        {activeGame === 'stack' && <ZenStackGame />}
+        {activeGame === 'stack' && <ZenOrbitalGame />}
         {activeGame === 'warp' && <NeonWarpGame />}
         {activeGame === 'light' && <LightShiftGame />}
         {activeGame === 'bubble' && <CosmicBubbleGame />}
