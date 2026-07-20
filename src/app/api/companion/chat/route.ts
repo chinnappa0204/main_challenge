@@ -53,8 +53,8 @@ CRITICAL RULES:
 
 User profile info (if available):
 - Habit: ${profile?.specificHabit || 'Harmful screen habit'}
-- Triggers: ${profile?.triggers.join(', ') || 'triggers'}
-- Interests: ${profile?.personalInterests.join(', ') || 'physical activity'}
+- Triggers: ${(profile?.triggers ?? []).join(', ') || 'general triggers'}
+- Interests: ${(profile?.personalInterests ?? []).join(', ') || 'physical activity'}
 - Coaching style: ${profile?.preferredCoachingTone || 'gentle'}`;
 
     const prompt = messages
