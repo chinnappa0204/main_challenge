@@ -40,7 +40,7 @@ The user is struggling with: ${profile.specificHabit} (Habit Type: ${profile.hab
 Current Emotion: ${currentEmotion}
 Current Urge Intensity: ${urgeIntensity}/10
 Available time: ${availableTime} minutes
-User Interests: ${profile.personalInterests.join(', ')}
+User Interests: ${(profile.personalInterests ?? []).join(', ') || 'general hobbies'}
 Optional User Context: ${context || 'None'}
 
 Adapt based on feedback:

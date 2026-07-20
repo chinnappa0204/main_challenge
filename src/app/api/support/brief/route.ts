@@ -51,8 +51,8 @@ Keep it objective, warm, and highly structured so the human coach can review it 
 
 #### 1. Clinical Summary
 * **Habit Frequency:** ${profile.frequencyDuration}
-* **Triggers Identified:** ${profile.triggers.join(', ') || 'General downtime'}
-* **Emotional State associated:** ${profile.emotions.join(', ') || 'restlessness'}
+* **Triggers Identified:** ${(profile.triggers ?? []).join(', ') || 'General downtime'}
+* **Emotional State associated:** ${(profile.emotions ?? []).join(', ') || 'restlessness'}
 
 #### 2. Progress & Interventions
 * **Successful Activities:** ${successfulActivities.length > 0 ? successfulActivities.join(', ') : 'None documented yet'}
