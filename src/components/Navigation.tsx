@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Calendar, TrendingUp, Heart, MessageSquare, Compass, LogOut } from 'lucide-react';
+import { Calendar, TrendingUp, Heart, MessageSquare, Compass, LogOut, Gamepad2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { storageRepository } from '@/lib/storage';
 
@@ -31,6 +31,7 @@ export default function Navigation() {
 
   const navItems = [
     { name: 'Today',         path: '/',              icon: Calendar },
+    { name: 'Games',         path: '/games',          icon: Gamepad2 },
     { name: 'Reclaimed',     path: '/reclaimed-life', icon: Compass },
     { name: 'Insights',      path: '/insights',       icon: TrendingUp },
     { name: 'Companion',     path: '/companion',      icon: MessageSquare },

@@ -409,6 +409,26 @@ function TodayDashboard({ profile }: { profile: UserProfile }) {
               )}
             </div>
           </div>
+
+          {/* Refreshment Mini-Games Shortcut Banner */}
+          <div className="card p-5 mt-4 flex items-center justify-between relative overflow-hidden" style={{ borderLeft: '3px solid #06b6d4' }}>
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center font-bold">
+                🎮
+              </div>
+              <div>
+                <p className="text-xs font-bold uppercase tracking-wider text-cyan-400">Mindful Break</p>
+                <h3 className="text-sm font-bold text-slate-100">Dopamine Reset Mini-Games</h3>
+                <p className="text-[11px] text-slate-400">4 minimal games to break urge loops</p>
+              </div>
+            </div>
+            <Link
+              href="/games"
+              className="btn-secondary px-3 py-2 text-xs font-semibold flex items-center gap-1 cursor-pointer hover:bg-slate-800"
+            >
+              Play <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
         </div>
       </div>
 
